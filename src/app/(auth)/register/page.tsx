@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Eye, EyeOff, Loader2, User, Mail, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { register } from "@/modules/auth/services/authService"
 
 import {
   Card,
@@ -46,13 +47,9 @@ export default function RegisterPage() {
     setIsLoading(true)
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000))
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        body: JSON.stringify(values),
-      })
-      if (!response.ok) {
-        const data = await response.json()
-        toast.error(data.message || "Error en el registro")
+      const response = await register(values.email, values.password);
+      if (response.error) {
+        toast.error(response.error)
         return
       }
 
