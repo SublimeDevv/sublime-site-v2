@@ -6,8 +6,8 @@ import { Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from 'react-toastify'
-import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 import {
   Card,
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/form"
 
 import { loginSchema, type LoginFormValues } from "@/modules/auth/schemas/loginSchema"
+import { authenticate } from "@/lib/auth-actions"
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -43,20 +44,19 @@ export default function LoginPage() {
   const onSubmit = async (values: LoginFormValues) => { 
     setIsLoading(true)
     try {
-      const response = await signIn("credentials", {
+      const response = await authenticate({
         email: values.email,
         password: values.password,
         redirect: false,
       })
 
-      if (response?.error) {
-        toast.error(response.error)
-        return
+      if (!response.success) {
+        return toast.error(response.message)
       }
-
+      
       router.push("/")
 
-      toast.success("¡Inicio de sesión exitoso!")
+      toast.success(response.message)
       
     } catch (error) {
       toast.error("Error en el inicio de sesión. Verifica tus credenciales.")
@@ -152,12 +152,13 @@ export default function LoginPage() {
 
             <div className="mt-4 text-center text-sm">
               <span className="text-gray-600">¿No tienes una cuenta? </span>
-              <a
+              <Link
                 href="/register"
                 className="font-medium text-primary hover:underline"
+                prefetch={false}
               >
                 Regístrate
-              </a>
+              </Link>
             </div>
           </CardContent>
         </Card>

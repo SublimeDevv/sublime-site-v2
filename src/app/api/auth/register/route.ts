@@ -16,6 +16,8 @@ export async function POST(request: Request) {
 
     const { firstName, lastName, email, password } = await request.json();
 
+    console.log(firstName, lastName, email, password);
+
     if (!firstName || !lastName || !email || !password) {
       return ResponseHelper.missingFields();
     }
@@ -53,17 +55,30 @@ export async function POST(request: Request) {
       },
     });
 
-    const role = await prisma.role.findFirst({
+    const findRole = await prisma.role.findFirst({
       where: {
         name: "user",
       },
     });
 
-    if (role) {
+    if (!findRole) {
+      const newRole = await prisma.role.create({
+        data: {
+          name: "user",
+        },
+      });
+
       await prisma.userRole.create({
         data: {
           userId: user.id,
-          roleId: role.id,
+          roleId: newRole.id,
+        },
+      });
+    } else {
+      await prisma.userRole.create({
+        data: {
+          userId: user.id,
+          roleId: findRole.id,
         },
       });
     }

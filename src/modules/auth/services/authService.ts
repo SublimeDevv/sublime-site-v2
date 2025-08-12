@@ -4,10 +4,10 @@ import { ResponseHelper } from "@/interfaces/ResponseHelper";
 
 const httpClient = new HttpClient();
 
-async function register(email: string, password: string) {
+async function register(firstName: string, lastName: string, email: string, password: string) {
   const response = await httpClient.post<ResponseHelper<RegisterModel>>(
     "/auth/register",
-    { email, password }
+    { firstName, lastName, email, password }
   );
   return response;
 }

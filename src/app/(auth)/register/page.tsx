@@ -26,6 +26,7 @@ import {
 
 import { registerSchema, type RegisterFormValues } from "@/modules/auth/schemas/registerSchema"
 import { toast } from "react-toastify"
+import Link from "next/link"
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -47,7 +48,7 @@ export default function RegisterPage() {
     setIsLoading(true)
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000))
-      const response = await register(values.email, values.password);
+      const response = await register(values.firstName, values.lastName, values.email, values.password);
       if (response.error) {
         toast.error(response.error)
         return
@@ -228,12 +229,13 @@ export default function RegisterPage() {
 
             <div className="mt-4 text-center text-sm">
               <span className="text-gray-600">¿Ya tienes una cuenta? </span>
-              <a
+              <Link
                 href="/login"
                 className="font-medium text-primary hover:underline"
+                prefetch={false}
               >
                 Inicia sesión
-              </a>
+              </Link>
             </div>
           </CardContent>
         </Card>
